@@ -16,6 +16,7 @@ MENU = {
     "3": {"name": "Pasta",       "price": 180, "prep_time": 20},
     "4": {"name": "Salad",       "price": 90,  "prep_time": 10},
     "5": {"name": "Biryani",     "price": 200, "prep_time": 30},
+    "6": {"name": "Dosa",       "price": 80,  "prep_time": 12},
 }
 
 # --- In-memory order store ---
