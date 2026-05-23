@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuickBite Food Delivery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #e94560;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 1.8rem; font-weight: 800; color: #e94560; }
+    .logo span { color: #fff; }
+    .cart-btn {
+      background: #e94560;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .cart-btn:hover { background: #c73652; transform: scale(1.05); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .hero h1 span { color: #e94560; }
+    .hero p { color: #aaa; font-size: 1.1rem; margin-bottom: 1.5rem; }
+    .customer-input {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .customer-input input {
+      padding: 0.7rem 1.2rem;
+      border-radius: 25px;
+      border: 2px solid #e94560;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 1rem;
+      width: 250px;
+      outline: none;
+    }
+    .customer-input input::placeholder { color: #666; }
+
+    /* MENU */
+    .menu-section { padding: 2rem; }
+    .menu-section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #e94560;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .food-card {
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid #2a2a4a;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .food-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #e94560, #0f3460);
+    }
+    .food-card:hover {
+      transform: translateY(-5px);
+      border-color: #e94560;
+      box-shadow: 0 10px 30px rgba(233,69,96,0.2);
+    }
+    .food-emoji { font-size: 3rem; margin-bottom: 0.8rem; }
+    .food-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .food-details {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.8rem 0;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    .food-price { font-size: 1.4rem; font-weight: 800; color: #e94560; }
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+    .qty-btn {
+      background: #e94560;
+      border: none;
+      color: white;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qty-btn:hover { background: #c73652; transform: scale(1.1); }
+    .qty-display {
+      font-size: 1.2rem;
+      font-weight: 700;
+      min-width: 30px;
+      text-align: center;
+    }
+    .add-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #e94560, #c73652);
+      border: none;
+      color: white;
+      padding: 0.7rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .add-btn:hover { transform: scale(1.03); box-shadow: 0 5px 15px rgba(233,69,96,0.4); }
+    .add-btn:disabled { background: #333; cursor: not-allowed; transform: none; }
+
+    /* CART MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      border: 1px solid #e94560;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h2 { color: #e94560; margin-bottom: 1.5rem; font-size: 1.5rem; }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #2a2a4a;
+    }
+    .cart-item-name { font-weight: 600; }
+    .cart-item-price { color: #e94560; font-weight: 700; }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #e94560;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+    .place-order-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #e94560, #c73652);
+      border: none;
+      color: white;
+      padding: 1rem;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.3s;
+    }
+    .place-order-btn:hover { transform: scale(1.02); }
+    .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .close-btn:hover { color: #e94560; }
+
+    /* ORDERS SECTION */
+    .orders-section {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .orders-section h2 {
+      font-size: 1.8rem;
+      color: #e94560;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .order-card {
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #e94560;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      animation: slideIn 0.4s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .order-info { flex: 1; }
+    .order-id { color: #aaa; font-size: 0.85rem; }
+    .order-item-name { font-size: 1.1rem; font-weight: 700; }
+    .order-customer { color: #aaa; font-size: 0.9rem; }
+    .status-badge {
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .status-confirmed { background: #1a4a2e; color: #4caf50; border: 1px solid #4caf50; }
+    .status-delayed   { background: #4a2a1a; color: #ff9800; border: 1px solid #ff9800; }
+    .order-price { font-size: 1.2rem; font-weight: 800; color: #e94560; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: #1a4a2e;
+      color: #4caf50;
+      border: 1px solid #4caf50;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      z-index: 300;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; color: #555; padding: 2rem; font-size: 1rem; }
+
+    /* LOADING */
+    .loading { text-align: center; padding: 1rem; color: #e94560; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Quick<span>Bite</span> 🍔</div>
+  <button class="cart-btn" onclick="toggleCart()">
+    🛒 Cart (<span id="cart-count">0</span>)
+  </button>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Hungry? We've got <span>you covered!</span></h1>
+  <p>Fresh food delivered fast — order from our menu below</p>
+  <div class="customer-input">
+    <input type="text" id="customer-name" placeholder="👤 Enter your name to order" maxlength="30"/>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="menu-section">
+  <h2>🍽️ Our Menu</h2>
+  <div class="menu-grid" id="menu-grid">
+    <div class="loading">Loading menu...</div>
+  </div>
+</div>
+
+<!-- ORDERS -->
+<div class="orders-section">
+  <h2>📋 Recent Orders</h2>
+  <div id="orders-list">
+    <div class="empty-state">No orders yet — place your first order above!</div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cart-modal">
+  <div class="modal">
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+    <h2>🛒 Your Cart</h2>
+    <div id="cart-items"></div>
+    <div class="cart-total" id="cart-total" style="display:none">
+      <span>Total</span>
+      <span id="total-price">₹0</span>
+    </div>
+    <button class="place-order-btn" onclick="placeAllOrders()">
+      🚀 Place Order
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const EMOJIS = {
+    "Burger":"🍔","Pizza":"🍕","Pasta":"🍝",
+    "Salad":"🥗","Biryani":"🍛","Dosa":"🫓"
+  };
+  let cart = {};
+  let quantities = {};
+
+  async function loadMenu() {
+    try {
+      const res = await fetch('/menu');
+      const data = await res.json();
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = '';
+      Object.entries(data.menu).forEach(([id, item]) => {
+        quantities[id] = 1;
+        const emoji = EMOJIS[item.name] || '🍽️';
+        grid.innerHTML += `
+          <div class="food-card">
+            <div class="food-emoji">${emoji}</div>
+            <div class="food-name">${item.name}</div>
+            <div class="food-details">
+              <span>⏱️ ${item.prep_time} mins</span>
+              <span>🔥 Fresh</span>
+            </div>
+            <div class="food-price">₹${item.price}</div>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
+              <span class="qty-display" id="qty-${id}">1</span>
+              <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+            </div>
+            <button class="add-btn" onclick="addToCart('${id}','${item.name}',${item.price})">
+              Add to Cart 🛒
+            </button>
+          </div>`;
+      });
+    } catch(e) {
+      document.getElementById('menu-grid').innerHTML =
+        '<div class="empty-state">Could not load menu. Is the server running?</div>';
+    }
+  }
+
+  function changeQty(id, delta) {
+    quantities[id] = Math.max(1, (quantities[id] || 1) + delta);
+    document.getElementById(`qty-${id}`).textContent = quantities[id];
+  }
+
+  function addToCart(id, name, price) {
+    const qty = quantities[id] || 1;
+    if (cart[id]) {
+      cart[id].qty += qty;
+    } else {
+      cart[id] = { name, price, qty };
+    }
+    updateCartCount();
+    showToast(`✅ ${name} x${qty} added to cart!`);
+  }
+
+  function updateCartCount() {
+    const total = Object.values(cart).reduce((s,i) => s + i.qty, 0);
+    document.getElementById('cart-count').textContent = total;
+  }
+
+  function toggleCart() {
+    const modal = document.getElementById('cart-modal');
+    modal.classList.toggle('active');
+    renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items');
+    const totalEl   = document.getElementById('cart-total');
+    const totalPrice= document.getElementById('total-price');
+    const items = Object.entries(cart);
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state">Your cart is empty!</div>';
+      totalEl.style.display = 'none';
+      return;
+    }
+    let total = 0;
+    container.innerHTML = items.map(([id,item]) => {
+      const subtotal = item.price * item.qty;
+      total += subtotal;
+      return `
+        <div class="cart-item">
+          <div>
+            <div class="cart-item-name">${EMOJIS[item.name]||'🍽️'} ${item.name}</div>
+            <div style="color:#aaa;font-size:0.85rem">₹${item.price} × ${item.qty}</div>
+          </div>
+          <div class="cart-item-price">₹${subtotal}</div>
+        </div>`;
+    }).join('');
+    totalEl.style.display = 'flex';
+    totalPrice.textContent = `₹${total}`;
+  }
+
+  async function placeAllOrders() {
+    const name = document.getElementById('customer-name').value.trim() || 'Guest';
+    const items = Object.entries(cart);
+    if (!items.length) { showToast('⚠️ Your cart is empty!'); return; }
+
+    for (const [id, item] of items) {
+      try {
+        await fetch('/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item_id: id, quantity: item.qty, customer: name })
+        });
+      } catch(e) { console.error(e); }
+    }
+    cart = {};
+    updateCartCount();
+    toggleCart();
+    showToast('🎉 Order placed successfully!');
+    setTimeout(loadOrders, 500);
+  }
+
+  async function loadOrders() {
+    try {
+      const res  = await fetch('/orders');
+      const data = await res.json();
+      const list = document.getElementById('orders-list');
+      if (!data.orders.length) {
+        list.innerHTML = '<div class="empty-state">No orders yet!</div>';
+        return;
+      }
+      list.innerHTML = [...data.orders].reverse().map(o => `
+        <div class="order-card">
+          <div class="order-info">
+            <div class="order-id">#${o.order_id} · ${o.prep_time}</div>
+            <div class="order-item-name">${EMOJIS[o.item]||'🍽️'} ${o.item} × ${o.quantity||1}</div>
+            <div class="order-customer">👤 ${o.customer}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span>
+            <span class="order-price">₹${o.total_price}</span>
+          </div>
+        </div>`).join('');
+    } catch(e) { console.error(e); }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  loadMenu();
+  loadOrders();
+  setInterval(loadOrders, 10000);
+</script>
+</body>
+</html>
