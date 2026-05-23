@@ -16,7 +16,7 @@ MENU = {
     "3": {"name": "Pasta",       "price": 180, "prep_time": 20},
     "4": {"name": "Salad",       "price": 90,  "prep_time": 10},
     "5": {"name": "Biryani",     "price": 200, "prep_time": 30},
-    "6": {"name": "Dosa",       "price": 80,  "prep_time": 12},
+    "6": {"name": "Dosa",        "price": 80,  "prep_time": 12},
 }
 
 # --- In-memory order store ---
@@ -26,18 +26,8 @@ order_id_counter = 1
 @app.route('/')
 def home():
     start = time.time()
-    response = jsonify({
-        "message": "Welcome to QuickBite Food Delivery!",
-        "endpoints": {
-            "menu":        "GET  /menu",
-            "place_order": "POST /order  {item_id, quantity, customer}",
-            "all_orders":  "GET  /orders",
-            "health":      "GET  /health",
-            "metrics":     "GET  /metrics"
-        }
-    })
     REQUEST_LATENCY.labels(endpoint='/').observe(time.time() - start)
-    return response
+    return render_template('index.html')
 
 @app.route('/health')
 def health():
