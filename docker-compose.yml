@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+
+  # --- Your Flask Food Delivery App ---
+  app:
+    build: .
+    container_name: quickbite_app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - quickbite_network
+
+  # --- Nginx Reverse Proxy ---
+  nginx:
+    image: nginx:alpine
+    container_name: quickbite_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - quickbite_network
+
+  # --- Prometheus (collects metrics from Flask) ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: quickbite_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    networks:
+      - quickbite_network
+
+  # --- Grafana (visualizes metrics from Prometheus) ---
+  grafana:
+    image: grafana/grafana:latest
+    container_name: quickbite_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=quickbite123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - quickbite_network
+
+# --- Shared Network ---
+networks:
+  quickbite_network:
+    driver: bridge
+
+# --- Persistent Storage ---
+volumes:
+  prometheus_data:
+  grafana_data:
