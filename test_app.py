@@ -43,6 +43,7 @@ def test_place_valid_order(client):
     data = json.loads(response.data)
     assert data["order"]["item"] == "Burger"
     assert data["order"]["total_price"] == 240
+    assert "timestamp" in data["order"]
 
 def test_place_invalid_order(client):
     """Test placing an order with invalid item"""
@@ -74,3 +75,6 @@ def test_metrics_endpoint(client):
     """Test Prometheus metrics endpoint is accessible"""
     response = client.get('/metrics')
     assert response.status_code == 200
+    assert b'food_orders_total' in response.data
+    assert b'food_revenue_total' in response.data
+    assert b'food_total_orders_count' in response.data
