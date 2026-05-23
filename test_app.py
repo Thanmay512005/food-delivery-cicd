@@ -29,7 +29,7 @@ def test_get_menu(client):
     assert response.status_code == 200
     data = json.loads(response.data)
     assert "menu" in data
-    assert len(data["menu"]) == 5
+    assert len(data["menu"]) == 6
 
 def test_place_valid_order(client):
     """Test placing a valid order"""
