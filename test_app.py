@@ -9,12 +9,10 @@ def client():
         yield client
 
 def test_home(client):
-    """Test home endpoint returns 200"""
+    """Test home endpoint returns 200 with HTML"""
     response = client.get('/')
     assert response.status_code == 200
-    data = json.loads(response.data)
-    assert "message" in data
-    assert "QuickBite" in data["message"]
+    assert b'QuickBite' in response.data
 
 def test_health(client):
     """Test health check endpoint"""
@@ -24,7 +22,7 @@ def test_health(client):
     assert data["status"] == "healthy"
 
 def test_get_menu(client):
-    """Test menu returns all 5 items"""
+    """Test menu returns all 6 items"""
     response = client.get('/menu')
     assert response.status_code == 200
     data = json.loads(response.data)
