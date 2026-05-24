@@ -81,10 +81,26 @@ def test_get_orders(client):
     data = json.loads(response.data)
     assert "total_orders" in data
 
+def test_customer_tracking(client):
+    """Test customer order tracking metrics"""
+    order_data = {
+        "item_id": "5",
+        "quantity": 1,
+        "customer": "Thanmay"
+    }
+    response = client.post('/order',
+                          data=json.dumps(order_data),
+                          content_type='application/json')
+    assert response.status_code == 201
+    data = json.loads(response.data)
+    assert data["order"]["customer"] == "Thanmay"
+    assert data["order"]["category"] == "Indian"
+
 def test_metrics_endpoint(client):
     """Test Prometheus metrics endpoint is accessible"""
     response = client.get('/metrics')
     assert response.status_code == 200
     assert b'food_orders_total' in response.data
     assert b'food_revenue_total' in response.data
-    assert b'food_total_orders_count' in response.data
+    assert b'food_customer_orders_total' in response.data
+    assert b'food_category_orders_total' in response.data
