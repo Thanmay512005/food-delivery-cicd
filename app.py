@@ -144,6 +144,22 @@ def get_orders():
     REQUEST_LATENCY.labels(endpoint='/orders').observe(time.time() - start)
     return result
 
+@app.route('/customers')
+def get_customers():
+    seen = []
+    seen_names = set()
+    for order in reversed(orders):
+        if order['customer'] not in seen_names:
+            seen.append({
+                "customer":        order['customer'],
+                "last_order":      order['item'],
+                "last_order_time": order['timestamp'],
+                "total_orders":    sum(1 for o in orders if o['customer'] == order['customer']),
+                "total_spent":     sum(o['total_price'] for o in orders if o['customer'] == order['customer'])
+            })
+            seen_names.add(order['customer'])
+    return jsonify({"customers": seen, "total": len(seen)})
+
 @app.route('/metrics')
 def metrics():
     return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
