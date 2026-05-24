@@ -22,12 +22,21 @@ def test_health(client):
     assert data["status"] == "healthy"
 
 def test_get_menu(client):
-    """Test menu returns all 6 items"""
+    """Test menu returns all 20 items"""
     response = client.get('/menu')
     assert response.status_code == 200
     data = json.loads(response.data)
     assert "menu" in data
-    assert len(data["menu"]) == 6
+    assert len(data["menu"]) == 20
+
+def test_menu_has_categories(client):
+    """Test menu items have categories"""
+    response = client.get('/menu')
+    data = json.loads(response.data)
+    for item in data["menu"].values():
+        assert "category" in item
+        assert "price" in item
+        assert "prep_time" in item
 
 def test_place_valid_order(client):
     """Test placing a valid order"""
@@ -44,6 +53,7 @@ def test_place_valid_order(client):
     assert data["order"]["item"] == "Burger"
     assert data["order"]["total_price"] == 240
     assert "timestamp" in data["order"]
+    assert "category" in data["order"]
 
 def test_place_invalid_order(client):
     """Test placing an order with invalid item"""
