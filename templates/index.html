@@ -1,338 +1,479 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QuickBite Food Delivery</title>
+  <title>QuickBite — Food Delivery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Poppins',sans-serif;background:#f8f9fa;color:#2d3436;min-height:100vh}
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f0f1a;
-      color: #fff;
-      min-height: 100vh;
+    /* LANDING PAGE */
+    .landing{
+      min-height:100vh;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;padding:2rem;
+    }
+    .landing-logo{font-size:4rem;margin-bottom:1rem}
+    .landing h1{font-size:3.5rem;font-weight:800;color:#fff;margin-bottom:0.5rem;line-height:1.2}
+    .landing h1 span{color:#ffd32a}
+    .landing p{font-size:1.2rem;color:rgba(255,255,255,0.85);margin-bottom:3rem;max-width:500px}
+    .landing-features{
+      display:flex;gap:2rem;margin-bottom:3rem;flex-wrap:wrap;justify-content:center
+    }
+    .feature{
+      background:rgba(255,255,255,0.15);
+      border-radius:12px;padding:1rem 1.5rem;
+      color:#fff;font-size:0.95rem;
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.2);
+    }
+    .feature span{font-size:1.5rem;display:block;margin-bottom:0.3rem}
+    .order-now-btn{
+      background:#ffd32a;color:#2d3436;
+      border:none;padding:1.2rem 3rem;
+      border-radius:50px;font-size:1.3rem;
+      font-weight:700;cursor:pointer;
+      transition:all 0.3s;
+      box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      font-family:'Poppins',sans-serif;
+    }
+    .order-now-btn:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(0,0,0,0.3)}
+
+    /* NAME MODAL */
+    .overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,0.6);z-index:500;
+      justify-content:center;align-items:center;
+      backdrop-filter:blur(4px);
+    }
+    .overlay.active{display:flex}
+    .name-modal{
+      background:#fff;border-radius:24px;
+      padding:3rem;width:90%;max-width:450px;
+      text-align:center;
+      box-shadow:0 25px 60px rgba(0,0,0,0.3);
+    }
+    .name-modal .modal-icon{font-size:3rem;margin-bottom:1rem}
+    .name-modal h2{font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;color:#2d3436}
+    .name-modal p{color:#636e72;margin-bottom:2rem;font-size:0.95rem}
+    .name-input{
+      width:100%;padding:1rem 1.5rem;
+      border:2px solid #e0e0e0;border-radius:12px;
+      font-size:1.1rem;font-family:'Poppins',sans-serif;
+      outline:none;transition:border 0.3s;
+      color:#2d3436;
+    }
+    .name-input:focus{border-color:#667eea}
+    .name-submit{
+      width:100%;margin-top:1.5rem;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;border:none;
+      padding:1rem;border-radius:12px;
+      font-size:1.1rem;font-weight:600;
+      cursor:pointer;transition:all 0.3s;
+      font-family:'Poppins',sans-serif;
+    }
+    .name-submit:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.4)}
+
+    /* MAIN APP */
+    .app{display:none}
+    .app.active{display:block}
+
+    /* NAVBAR */
+    nav{
+      background:#fff;padding:1rem 2rem;
+      display:flex;align-items:center;justify-content:space-between;
+      box-shadow:0 2px 15px rgba(0,0,0,0.08);
+      position:sticky;top:0;z-index:100;
+    }
+    .nav-logo{font-size:1.5rem;font-weight:800;color:#667eea}
+    .nav-logo span{color:#ffd32a}
+    .nav-right{display:flex;align-items:center;gap:1.5rem}
+    .nav-user{
+      background:#f0f0f0;padding:0.4rem 1rem;
+      border-radius:20px;font-size:0.9rem;font-weight:500;
+    }
+    .nav-cart{
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;border:none;
+      padding:0.6rem 1.2rem;border-radius:20px;
+      font-size:0.95rem;font-weight:600;
+      cursor:pointer;transition:all 0.3s;
+      font-family:'Poppins',sans-serif;
+    }
+    .nav-cart:hover{transform:scale(1.05)}
+
+    /* HERO BANNER */
+    .hero-banner{
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      padding:2.5rem 2rem;color:#fff;text-align:center;
+    }
+    .hero-banner h2{font-size:2rem;font-weight:700;margin-bottom:0.5rem}
+    .hero-banner h2 span{color:#ffd32a}
+    .hero-banner p{color:rgba(255,255,255,0.85);font-size:1rem}
+
+    /* CATEGORY FILTER */
+    .category-section{
+      background:#fff;padding:1.2rem 2rem;
+      display:flex;gap:0.8rem;flex-wrap:wrap;
+      border-bottom:1px solid #f0f0f0;
+      position:sticky;top:65px;z-index:90;
+    }
+    .cat-btn{
+      padding:0.5rem 1.2rem;border-radius:20px;
+      border:2px solid #e0e0e0;background:#fff;
+      font-size:0.9rem;font-weight:500;
+      cursor:pointer;transition:all 0.3s;
+      font-family:'Poppins',sans-serif;color:#636e72;
+    }
+    .cat-btn.active,.cat-btn:hover{
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;border-color:transparent;
     }
 
-    /* HEADER */
-    header {
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #e94560;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    /* MENU SECTION */
+    .menu-section{padding:2rem;max-width:1400px;margin:0 auto}
+    .menu-section h3{
+      font-size:1.4rem;font-weight:700;
+      margin-bottom:1.5rem;color:#2d3436;
     }
-    .logo { font-size: 1.8rem; font-weight: 800; color: #e94560; }
-    .logo span { color: #fff; }
-    .cart-btn {
-      background: #e94560;
-      border: none;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: all 0.3s;
+    .menu-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:1.5rem;
     }
-    .cart-btn:hover { background: #c73652; transform: scale(1.05); }
 
-    /* HERO */
-    .hero {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      padding: 3rem 2rem;
-      text-align: center;
+    /* FOOD CARD */
+    .food-card{
+      background:#fff;border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 4px 15px rgba(0,0,0,0.08);
+      transition:all 0.3s;border:1px solid #f0f0f0;
     }
-    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .hero h1 span { color: #e94560; }
-    .hero p { color: #aaa; font-size: 1.1rem; margin-bottom: 1.5rem; }
-    .customer-input {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
+    .food-card:hover{transform:translateY(-5px);box-shadow:0 12px 30px rgba(0,0,0,0.15)}
+    .card-header{
+      background:linear-gradient(135deg,#f8f9ff,#f0f3ff);
+      padding:1.5rem;text-align:center;position:relative;
     }
-    .customer-input input {
-      padding: 0.7rem 1.2rem;
-      border-radius: 25px;
-      border: 2px solid #e94560;
-      background: #1a1a2e;
-      color: #fff;
-      font-size: 1rem;
-      width: 250px;
-      outline: none;
+    .food-emoji-big{font-size:3.5rem;margin-bottom:0.5rem}
+    .category-tag{
+      position:absolute;top:0.8rem;right:0.8rem;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;font-size:0.7rem;font-weight:600;
+      padding:0.25rem 0.6rem;border-radius:10px;
     }
-    .customer-input input::placeholder { color: #666; }
-
-    /* MENU */
-    .menu-section { padding: 2rem; }
-    .menu-section h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: #e94560;
+    .card-body{padding:1.2rem}
+    .food-name-card{font-size:1.1rem;font-weight:700;margin-bottom:0.3rem}
+    .food-meta{
+      display:flex;gap:1rem;color:#636e72;
+      font-size:0.82rem;margin-bottom:1rem;
     }
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.5rem;
-      max-width: 1200px;
-      margin: 0 auto;
+    .food-meta span{display:flex;align-items:center;gap:0.3rem}
+    .card-footer{
+      display:flex;align-items:center;
+      justify-content:space-between;
+      padding:0 1.2rem 1.2rem;
     }
-    .food-card {
-      background: linear-gradient(145deg, #1a1a2e, #16213e);
-      border-radius: 16px;
-      padding: 1.5rem;
-      border: 1px solid #2a2a4a;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
+    .food-price-card{font-size:1.3rem;font-weight:800;color:#667eea}
+    .qty-row{display:flex;align-items:center;gap:0.6rem}
+    .qty-btn-sm{
+      width:28px;height:28px;border-radius:50%;
+      border:2px solid #667eea;background:#fff;
+      color:#667eea;font-size:1rem;font-weight:700;
+      cursor:pointer;transition:all 0.2s;
+      display:flex;align-items:center;justify-content:center;
     }
-    .food-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #e94560, #0f3460);
+    .qty-btn-sm:hover{background:#667eea;color:#fff}
+    .qty-num{font-size:1rem;font-weight:700;min-width:20px;text-align:center}
+    .add-cart-btn{
+      width:100%;margin:0 1.2rem 1.2rem;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;border:none;padding:0.7rem;
+      border-radius:10px;font-size:0.95rem;font-weight:600;
+      cursor:pointer;transition:all 0.3s;
+      font-family:'Poppins',sans-serif;
     }
-    .food-card:hover {
-      transform: translateY(-5px);
-      border-color: #e94560;
-      box-shadow: 0 10px 30px rgba(233,69,96,0.2);
-    }
-    .food-emoji { font-size: 3rem; margin-bottom: 0.8rem; }
-    .food-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; }
-    .food-details {
-      display: flex;
-      justify-content: space-between;
-      margin: 0.8rem 0;
-      color: #aaa;
-      font-size: 0.9rem;
-    }
-    .food-price { font-size: 1.4rem; font-weight: 800; color: #e94560; }
-    .qty-control {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      margin: 1rem 0;
-    }
-    .qty-btn {
-      background: #e94560;
-      border: none;
-      color: white;
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .qty-btn:hover { background: #c73652; transform: scale(1.1); }
-    .qty-display {
-      font-size: 1.2rem;
-      font-weight: 700;
-      min-width: 30px;
-      text-align: center;
-    }
-    .add-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #e94560, #c73652);
-      border: none;
-      color: white;
-      padding: 0.7rem;
-      border-radius: 25px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .add-btn:hover { transform: scale(1.03); box-shadow: 0 5px 15px rgba(233,69,96,0.4); }
-    .add-btn:disabled { background: #333; cursor: not-allowed; transform: none; }
+    .add-cart-btn:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(102,126,234,0.4)}
 
     /* CART MODAL */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 200;
-      justify-content: center;
-      align-items: center;
+    .cart-modal{
+      background:#fff;border-radius:24px;
+      width:90%;max-width:500px;
+      max-height:85vh;overflow-y:auto;
+      box-shadow:0 25px 60px rgba(0,0,0,0.3);
     }
-    .modal-overlay.active { display: flex; }
-    .modal {
-      background: #1a1a2e;
-      border-radius: 20px;
-      padding: 2rem;
-      width: 90%;
-      max-width: 500px;
-      border: 1px solid #e94560;
-      max-height: 80vh;
-      overflow-y: auto;
+    .cart-header{
+      padding:1.5rem 2rem;
+      border-bottom:1px solid #f0f0f0;
+      display:flex;justify-content:space-between;align-items:center;
+      position:sticky;top:0;background:#fff;border-radius:24px 24px 0 0;
     }
-    .modal h2 { color: #e94560; margin-bottom: 1.5rem; font-size: 1.5rem; }
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8rem 0;
-      border-bottom: 1px solid #2a2a4a;
+    .cart-header h2{font-size:1.4rem;font-weight:700}
+    .close-x{
+      background:none;border:none;font-size:1.5rem;
+      cursor:pointer;color:#636e72;
     }
-    .cart-item-name { font-weight: 600; }
-    .cart-item-price { color: #e94560; font-weight: 700; }
-    .cart-total {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 2px solid #e94560;
-      font-size: 1.2rem;
-      font-weight: 800;
+    .cart-body{padding:1.5rem 2rem}
+    .cart-item-row{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:1rem 0;border-bottom:1px solid #f8f9fa;
     }
-    .place-order-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #e94560, #c73652);
-      border: none;
-      color: white;
-      padding: 1rem;
-      border-radius: 25px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: all 0.3s;
+    .cart-item-left{display:flex;align-items:center;gap:0.8rem}
+    .cart-item-emoji{font-size:1.8rem}
+    .cart-item-name{font-weight:600;font-size:0.95rem}
+    .cart-item-sub{color:#636e72;font-size:0.82rem}
+    .cart-item-price{font-weight:700;color:#667eea;font-size:1rem}
+    .cart-empty{text-align:center;padding:2rem;color:#b2bec3}
+    .cart-empty span{font-size:3rem;display:block;margin-bottom:1rem}
+    .cart-summary{
+      background:#f8f9ff;border-radius:12px;
+      padding:1.2rem;margin-top:1rem;
     }
-    .place-order-btn:hover { transform: scale(1.02); }
-    .close-btn {
-      float: right;
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 1.5rem;
-      cursor: pointer;
+    .summary-row{
+      display:flex;justify-content:space-between;
+      font-size:0.9rem;padding:0.3rem 0;color:#636e72;
     }
-    .close-btn:hover { color: #e94560; }
+    .summary-total{
+      display:flex;justify-content:space-between;
+      font-size:1.1rem;font-weight:700;
+      padding-top:0.8rem;margin-top:0.8rem;
+      border-top:2px solid #667eea;color:#2d3436;
+    }
+    .checkout-btn{
+      width:100%;margin-top:1.2rem;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;border:none;padding:1rem;
+      border-radius:12px;font-size:1.05rem;font-weight:700;
+      cursor:pointer;transition:all 0.3s;
+      font-family:'Poppins',sans-serif;
+    }
+    .checkout-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.4)}
 
     /* ORDERS SECTION */
-    .orders-section {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+    .orders-section{
+      background:#f8f9fa;padding:2rem;
+      max-width:1400px;margin:0 auto;
     }
-    .orders-section h2 {
-      font-size: 1.8rem;
-      color: #e94560;
-      margin-bottom: 1.5rem;
-      text-align: center;
+    .orders-section h3{
+      font-size:1.4rem;font-weight:700;
+      margin-bottom:1.5rem;color:#2d3436;
     }
-    .order-card {
-      background: linear-gradient(145deg, #1a1a2e, #16213e);
-      border-radius: 12px;
-      padding: 1.2rem 1.5rem;
-      margin-bottom: 1rem;
-      border-left: 4px solid #e94560;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      animation: slideIn 0.4s ease;
+    .order-card-new{
+      background:#fff;border-radius:16px;
+      padding:1.2rem 1.5rem;margin-bottom:1rem;
+      display:flex;justify-content:space-between;align-items:center;
+      box-shadow:0 2px 10px rgba(0,0,0,0.06);
+      border-left:4px solid #667eea;
+      animation:slideIn 0.4s ease;flex-wrap:wrap;gap:1rem;
     }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-20px); }
-      to   { opacity: 1; transform: translateX(0); }
+    .order-card-new.delayed{border-left-color:#e17055}
+    @keyframes slideIn{
+      from{opacity:0;transform:translateX(-20px)}
+      to{opacity:1;transform:translateX(0)}
     }
-    .order-info { flex: 1; }
-    .order-id { color: #aaa; font-size: 0.85rem; }
-    .order-item-name { font-size: 1.1rem; font-weight: 700; }
-    .order-customer { color: #aaa; font-size: 0.9rem; }
-    .status-badge {
-      padding: 0.4rem 1rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 700;
+    .order-left{display:flex;align-items:center;gap:1rem}
+    .order-emoji{font-size:2rem}
+    .order-id-text{font-size:0.75rem;color:#b2bec3;font-weight:500}
+    .order-name-text{font-size:1rem;font-weight:700}
+    .order-customer-text{font-size:0.85rem;color:#636e72}
+    .order-right{display:flex;align-items:center;gap:1rem}
+    .status-pill{
+      padding:0.3rem 0.8rem;border-radius:20px;
+      font-size:0.8rem;font-weight:600;
     }
-    .status-confirmed { background: #1a4a2e; color: #4caf50; border: 1px solid #4caf50; }
-    .status-delayed   { background: #4a2a1a; color: #ff9800; border: 1px solid #ff9800; }
-    .order-price { font-size: 1.2rem; font-weight: 800; color: #e94560; }
+    .pill-confirmed{background:#e8f5e9;color:#2e7d32}
+    .pill-delayed{background:#fff3e0;color:#e65100}
+    .order-amount{font-size:1.1rem;font-weight:800;color:#667eea}
+    .order-time{font-size:0.8rem;color:#b2bec3}
+    .no-orders{
+      text-align:center;padding:3rem;color:#b2bec3;
+      background:#fff;border-radius:16px;
+    }
+    .no-orders span{font-size:3rem;display:block;margin-bottom:1rem}
 
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 2rem; right: 2rem;
-      background: #1a4a2e;
-      color: #4caf50;
-      border: 1px solid #4caf50;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      font-weight: 600;
-      z-index: 300;
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.4s;
+    /* SUCCESS TOAST */
+    .toast{
+      position:fixed;bottom:2rem;right:2rem;
+      background:#2d3436;color:#fff;
+      padding:1rem 1.5rem;border-radius:12px;
+      font-weight:500;z-index:999;
+      transform:translateY(100px);opacity:0;
+      transition:all 0.4s;display:flex;align-items:center;gap:0.8rem;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
     }
-    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{border-left:4px solid #00b894}
+    .toast.error{border-left:4px solid #e17055}
 
-    /* EMPTY STATE */
-    .empty-state { text-align: center; color: #555; padding: 2rem; font-size: 1rem; }
+    /* SUCCESS ANIMATION */
+    .success-overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,0.7);z-index:600;
+      justify-content:center;align-items:center;
+    }
+    .success-overlay.active{display:flex}
+    .success-box{
+      background:#fff;border-radius:24px;
+      padding:3rem;text-align:center;
+      max-width:400px;width:90%;
+      box-shadow:0 25px 60px rgba(0,0,0,0.3);
+    }
+    .success-icon{font-size:4rem;margin-bottom:1rem}
+    .success-box h2{font-size:1.5rem;font-weight:700;margin-bottom:0.5rem}
+    .success-box p{color:#636e72;margin-bottom:1.5rem}
+    .success-details{
+      background:#f8f9ff;border-radius:12px;
+      padding:1rem;margin-bottom:1.5rem;text-align:left;
+    }
+    .success-details div{
+      display:flex;justify-content:space-between;
+      padding:0.3rem 0;font-size:0.9rem;
+    }
+    .success-details div span:last-child{font-weight:600;color:#667eea}
+    .continue-btn{
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;border:none;padding:0.8rem 2rem;
+      border-radius:12px;font-size:1rem;font-weight:600;
+      cursor:pointer;font-family:'Poppins',sans-serif;
+      transition:all 0.3s;
+    }
+    .continue-btn:hover{transform:translateY(-2px)}
 
-    /* LOADING */
-    .loading { text-align: center; padding: 1rem; color: #e94560; }
+    /* DIVIDER */
+    .section-divider{
+      height:8px;background:#f0f0f0;
+    }
+
+    @media(max-width:600px){
+      .landing h1{font-size:2.2rem}
+      .menu-grid{grid-template-columns:1fr}
+      .order-card-new{flex-direction:column;align-items:flex-start}
+    }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">Quick<span>Bite</span> 🍔</div>
-  <button class="cart-btn" onclick="toggleCart()">
-    🛒 Cart (<span id="cart-count">0</span>)
+<!-- ═══════════════════ LANDING PAGE ═══════════════════ -->
+<div class="landing" id="landing">
+  <div class="landing-logo">🍔</div>
+  <h1>Delicious Food<br><span>Delivered Fast</span></h1>
+  <p>Fresh meals from our kitchen to your table — order in seconds, enjoy in minutes</p>
+  <div class="landing-features">
+    <div class="feature"><span>⚡</span>Fast Delivery</div>
+    <div class="feature"><span>🍽️</span>20+ Items</div>
+    <div class="feature"><span>💯</span>Fresh & Hot</div>
+    <div class="feature"><span>💳</span>Easy Payment</div>
+  </div>
+  <button class="order-now-btn" onclick="startOrdering()">
+    🛵 Order Food Now
   </button>
-</header>
+</div>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>Hungry? We've got <span>you covered!</span></h1>
-  <p>Fresh food delivered fast — order from our menu below</p>
-  <div class="customer-input">
-    <input type="text" id="customer-name" placeholder="👤 Enter your name to order" maxlength="30"/>
+<!-- ═══════════════════ NAME MODAL ═══════════════════ -->
+<div class="overlay" id="name-overlay">
+  <div class="name-modal">
+    <div class="modal-icon">👋</div>
+    <h2>Welcome!</h2>
+    <p>Let us know your name so we can personalize your order experience</p>
+    <input type="text" class="name-input" id="name-input"
+           placeholder="Enter your full name..." maxlength="30"
+           onkeypress="if(event.key==='Enter') submitName()"/>
+    <button class="name-submit" onclick="submitName()">
+      Continue to Menu →
+    </button>
   </div>
 </div>
 
-<!-- MENU -->
-<div class="menu-section">
-  <h2>🍽️ Our Menu</h2>
-  <div class="menu-grid" id="menu-grid">
-    <div class="loading">Loading menu...</div>
-  </div>
-</div>
+<!-- ═══════════════════ MAIN APP ═══════════════════ -->
+<div class="app" id="main-app">
 
-<!-- ORDERS -->
-<div class="orders-section">
-  <h2>📋 Recent Orders</h2>
-  <div id="orders-list">
-    <div class="empty-state">No orders yet — place your first order above!</div>
-  </div>
-</div>
-
-<!-- CART MODAL -->
-<div class="modal-overlay" id="cart-modal">
-  <div class="modal">
-    <button class="close-btn" onclick="toggleCart()">✕</button>
-    <h2>🛒 Your Cart</h2>
-    <div id="cart-items"></div>
-    <div class="cart-total" id="cart-total" style="display:none">
-      <span>Total</span>
-      <span id="total-price">₹0</span>
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-logo">Quick<span>Bite</span> 🍔</div>
+    <div class="nav-right">
+      <div class="nav-user">👤 <span id="nav-username">Guest</span></div>
+      <button class="nav-cart" onclick="toggleCart()">
+        🛒 Cart <span id="cart-count">0</span>
+      </button>
     </div>
-    <button class="place-order-btn" onclick="placeAllOrders()">
-      🚀 Place Order
+  </nav>
+
+  <!-- HERO BANNER -->
+  <div class="hero-banner">
+    <h2>Hey <span id="hero-name">there</span>! 👋</h2>
+    <p>What are you craving today? Browse our menu and order your favorites</p>
+  </div>
+
+  <!-- CATEGORY FILTER -->
+  <div class="category-section">
+    <button class="cat-btn active" onclick="filterCategory('All',this)">🍽️ All</button>
+    <button class="cat-btn" onclick="filterCategory('Fast Food',this)">🍔 Fast Food</button>
+    <button class="cat-btn" onclick="filterCategory('Indian',this)">🍛 Indian</button>
+    <button class="cat-btn" onclick="filterCategory('Chinese',this)">🥢 Chinese</button>
+    <button class="cat-btn" onclick="filterCategory('Italian',this)">🍝 Italian</button>
+    <button class="cat-btn" onclick="filterCategory('Healthy',this)">🥗 Healthy</button>
+    <button class="cat-btn" onclick="filterCategory('Drinks',this)">🥤 Drinks</button>
+    <button class="cat-btn" onclick="filterCategory('Dessert',this)">🍮 Dessert</button>
+  </div>
+
+  <!-- MENU -->
+  <div class="menu-section">
+    <h3>📋 Our Menu</h3>
+    <div class="menu-grid" id="menu-grid">
+      <p style="color:#636e72">Loading menu...</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- RECENT ORDERS -->
+  <div class="orders-section">
+    <h3>📦 Recent Orders</h3>
+    <div id="orders-list">
+      <div class="no-orders">
+        <span>🛵</span>
+        No orders yet — start ordering above!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CART MODAL ═══════════════════ -->
+<div class="overlay" id="cart-overlay">
+  <div class="cart-modal">
+    <div class="cart-header">
+      <h2>🛒 Your Cart</h2>
+      <button class="close-x" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-body">
+      <div id="cart-items-list"></div>
+      <div id="cart-summary-section" style="display:none">
+        <div class="cart-summary">
+          <div class="summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+          <div class="summary-row"><span>Delivery fee</span><span>₹30</span></div>
+          <div class="summary-total"><span>Total</span><span id="grand-total">₹0</span></div>
+        </div>
+        <button class="checkout-btn" onclick="placeAllOrders()">
+          🚀 Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SUCCESS MODAL ═══════════════════ -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <h2>Order Placed!</h2>
+    <p>Your food is being prepared with love</p>
+    <div class="success-details" id="success-details"></div>
+    <button class="continue-btn" onclick="closeSuccess()">
+      Continue Ordering
     </button>
   </div>
 </div>
@@ -342,119 +483,201 @@
 
 <script>
   const EMOJIS = {
-    "Burger":"🍔","Pizza":"🍕","Pasta":"🍝",
-    "Salad":"🥗","Biryani":"🍛","Dosa":"🫓"
+    "Burger":"🍔","Pizza":"🍕","Pasta":"🍝","Salad":"🥗",
+    "Biryani":"🍛","Dosa":"🫓","Paneer Tikka":"🧆",
+    "Fried Rice":"🍚","Noodles":"🍜","Sandwich":"🥪",
+    "Spring Rolls":"🥟","Masala Chai":"☕","Butter Naan":"🫓",
+    "Dal Makhani":"🍲","Chocolate Shake":"🍫","French Fries":"🍟",
+    "Manchurian":"🥡","Idli Sambar":"🍱","Cold Coffee":"☕",
+    "Gulab Jamun":"🍮"
   };
+
+  let customerName = '';
   let cart = {};
   let quantities = {};
+  let fullMenu = {};
+
+  function startOrdering() {
+    document.getElementById('name-overlay').classList.add('active');
+    setTimeout(() => document.getElementById('name-input').focus(), 100);
+  }
+
+  function submitName() {
+    const val = document.getElementById('name-input').value.trim();
+    if (!val) {
+      document.getElementById('name-input').style.borderColor = '#e17055';
+      document.getElementById('name-input').placeholder = 'Please enter your name!';
+      return;
+    }
+    customerName = val;
+    document.getElementById('nav-username').textContent = customerName;
+    document.getElementById('hero-name').textContent = customerName.split(' ')[0];
+    document.getElementById('name-overlay').classList.remove('active');
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('main-app').classList.add('active');
+    loadMenu();
+    loadOrders();
+    setInterval(loadOrders, 10000);
+  }
 
   async function loadMenu() {
     try {
       const res = await fetch('/menu');
       const data = await res.json();
-      const grid = document.getElementById('menu-grid');
-      grid.innerHTML = '';
-      Object.entries(data.menu).forEach(([id, item]) => {
-        quantities[id] = 1;
-        const emoji = EMOJIS[item.name] || '🍽️';
-        grid.innerHTML += `
-          <div class="food-card">
-            <div class="food-emoji">${emoji}</div>
-            <div class="food-name">${item.name}</div>
-            <div class="food-details">
-              <span>⏱️ ${item.prep_time} mins</span>
-              <span>🔥 Fresh</span>
-            </div>
-            <div class="food-price">₹${item.price}</div>
-            <div class="qty-control">
-              <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
-              <span class="qty-display" id="qty-${id}">1</span>
-              <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
-            </div>
-            <button class="add-btn" onclick="addToCart('${id}','${item.name}',${item.price})">
-              Add to Cart 🛒
-            </button>
-          </div>`;
-      });
+      fullMenu = data.menu;
+      Object.keys(fullMenu).forEach(id => quantities[id] = 1);
+      renderMenu(fullMenu);
     } catch(e) {
       document.getElementById('menu-grid').innerHTML =
-        '<div class="empty-state">Could not load menu. Is the server running?</div>';
+        '<p style="color:#e17055">Could not load menu. Please refresh.</p>';
     }
+  }
+
+  function renderMenu(menu) {
+    const grid = document.getElementById('menu-grid');
+    const items = Object.entries(menu);
+    if (!items.length) {
+      grid.innerHTML = '<p style="color:#636e72;text-align:center;grid-column:1/-1">No items in this category</p>';
+      return;
+    }
+    grid.innerHTML = items.map(([id, item]) => {
+      const emoji = EMOJIS[item.name] || '🍽️';
+      return `
+      <div class="food-card">
+        <div class="card-header">
+          <div class="food-emoji-big">${emoji}</div>
+          <div class="category-tag">${item.category}</div>
+        </div>
+        <div class="card-body">
+          <div class="food-name-card">${item.name}</div>
+          <div class="food-meta">
+            <span>⏱️ ${item.prep_time} mins</span>
+            <span>🔥 Fresh</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="food-price-card">₹${item.price}</div>
+          <div class="qty-row">
+            <button class="qty-btn-sm" onclick="changeQty('${id}',-1)">−</button>
+            <span class="qty-num" id="qty-${id}">1</span>
+            <button class="qty-btn-sm" onclick="changeQty('${id}',1)">+</button>
+          </div>
+        </div>
+        <button class="add-cart-btn" onclick="addToCart('${id}','${item.name}',${item.price})">
+          Add to Cart 🛒
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  function filterCategory(cat, btn) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (cat === 'All') { renderMenu(fullMenu); return; }
+    const filtered = Object.fromEntries(
+      Object.entries(fullMenu).filter(([,v]) => v.category === cat)
+    );
+    renderMenu(filtered);
   }
 
   function changeQty(id, delta) {
     quantities[id] = Math.max(1, (quantities[id] || 1) + delta);
-    document.getElementById(`qty-${id}`).textContent = quantities[id];
+    const el = document.getElementById(`qty-${id}`);
+    if (el) el.textContent = quantities[id];
   }
 
   function addToCart(id, name, price) {
     const qty = quantities[id] || 1;
-    if (cart[id]) {
-      cart[id].qty += qty;
-    } else {
-      cart[id] = { name, price, qty };
-    }
+    if (cart[id]) cart[id].qty += qty;
+    else cart[id] = { name, price, qty };
     updateCartCount();
-    showToast(`✅ ${name} x${qty} added to cart!`);
+    showToast(`✅ ${name} × ${qty} added!`, 'success');
   }
 
   function updateCartCount() {
-    const total = Object.values(cart).reduce((s,i) => s + i.qty, 0);
+    const total = Object.values(cart).reduce((s, i) => s + i.qty, 0);
     document.getElementById('cart-count').textContent = total;
   }
 
   function toggleCart() {
-    const modal = document.getElementById('cart-modal');
-    modal.classList.toggle('active');
+    document.getElementById('cart-overlay').classList.toggle('active');
     renderCart();
   }
 
   function renderCart() {
-    const container = document.getElementById('cart-items');
-    const totalEl   = document.getElementById('cart-total');
-    const totalPrice= document.getElementById('total-price');
-    const items = Object.entries(cart);
+    const container = document.getElementById('cart-items-list');
+    const summary   = document.getElementById('cart-summary-section');
+    const items     = Object.entries(cart);
     if (!items.length) {
-      container.innerHTML = '<div class="empty-state">Your cart is empty!</div>';
-      totalEl.style.display = 'none';
+      container.innerHTML = `
+        <div class="cart-empty">
+          <span>🛒</span>
+          Your cart is empty!<br>
+          <small>Add items from the menu</small>
+        </div>`;
+      summary.style.display = 'none';
       return;
     }
-    let total = 0;
-    container.innerHTML = items.map(([id,item]) => {
-      const subtotal = item.price * item.qty;
-      total += subtotal;
+    let subtotal = 0;
+    container.innerHTML = items.map(([id, item]) => {
+      const sub = item.price * item.qty;
+      subtotal += sub;
       return `
-        <div class="cart-item">
+      <div class="cart-item-row">
+        <div class="cart-item-left">
+          <div class="cart-item-emoji">${EMOJIS[item.name]||'🍽️'}</div>
           <div>
-            <div class="cart-item-name">${EMOJIS[item.name]||'🍽️'} ${item.name}</div>
-            <div style="color:#aaa;font-size:0.85rem">₹${item.price} × ${item.qty}</div>
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-sub">₹${item.price} × ${item.qty}</div>
           </div>
-          <div class="cart-item-price">₹${subtotal}</div>
-        </div>`;
+        </div>
+        <div class="cart-item-price">₹${sub}</div>
+      </div>`;
     }).join('');
-    totalEl.style.display = 'flex';
-    totalPrice.textContent = `₹${total}`;
+    document.getElementById('subtotal').textContent = `₹${subtotal}`;
+    document.getElementById('grand-total').textContent = `₹${subtotal + 30}`;
+    summary.style.display = 'block';
   }
 
   async function placeAllOrders() {
-    const name = document.getElementById('customer-name').value.trim() || 'Guest';
     const items = Object.entries(cart);
-    if (!items.length) { showToast('⚠️ Your cart is empty!'); return; }
-
+    if (!items.length) return;
+    let lastOrder = null;
     for (const [id, item] of items) {
       try {
-        await fetch('/order', {
+        const res = await fetch('/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ item_id: id, quantity: item.qty, customer: name })
+          body: JSON.stringify({
+            item_id: id,
+            quantity: item.qty,
+            customer: customerName || 'Guest'
+          })
         });
+        const data = await res.json();
+        lastOrder = data.order;
       } catch(e) { console.error(e); }
     }
+    const totalItems = items.length;
+    const totalAmt   = Object.values(cart).reduce((s,i) => s + i.price * i.qty, 0);
     cart = {};
     updateCartCount();
-    toggleCart();
-    showToast('🎉 Order placed successfully!');
+    document.getElementById('cart-overlay').classList.remove('active');
+    if (lastOrder) {
+      document.getElementById('success-details').innerHTML = `
+        <div><span>👤 Customer</span><span>${customerName}</span></div>
+        <div><span>📦 Items</span><span>${totalItems} item(s)</span></div>
+        <div><span>💰 Total</span><span>₹${totalAmt + 30}</span></div>
+        <div><span>⏱️ Est. time</span><span>${lastOrder.prep_time}</span></div>
+        <div><span>📋 Status</span><span>${lastOrder.status.toUpperCase()}</span></div>
+      `;
+      document.getElementById('success-overlay').classList.add('active');
+    }
     setTimeout(loadOrders, 500);
+  }
+
+  function closeSuccess() {
+    document.getElementById('success-overlay').classList.remove('active');
   }
 
   async function loadOrders() {
@@ -463,34 +686,39 @@
       const data = await res.json();
       const list = document.getElementById('orders-list');
       if (!data.orders.length) {
-        list.innerHTML = '<div class="empty-state">No orders yet!</div>';
+        list.innerHTML = `
+          <div class="no-orders">
+            <span>🛵</span>No orders yet — start ordering above!
+          </div>`;
         return;
       }
       list.innerHTML = [...data.orders].reverse().map(o => `
-        <div class="order-card">
-          <div class="order-info">
-            <div class="order-id">#${o.order_id} · ${o.prep_time}</div>
-            <div class="order-item-name">${EMOJIS[o.item]||'🍽️'} ${o.item} × ${o.quantity||1}</div>
-            <div class="order-customer">👤 ${o.customer}</div>
+        <div class="order-card-new ${o.status==='delayed'?'delayed':''}">
+          <div class="order-left">
+            <div class="order-emoji">${EMOJIS[o.item]||'🍽️'}</div>
+            <div>
+              <div class="order-id-text">Order #${o.order_id} · ${o.timestamp||''}</div>
+              <div class="order-name-text">${o.item} × ${o.quantity||1}</div>
+              <div class="order-customer-text">👤 ${o.customer}</div>
+            </div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
-            <span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span>
-            <span class="order-price">₹${o.total_price}</span>
+          <div class="order-right">
+            <span class="status-pill pill-${o.status}">${o.status.toUpperCase()}</span>
+            <div>
+              <div class="order-amount">₹${o.total_price}</div>
+              <div class="order-time">⏱️ ${o.prep_time}</div>
+            </div>
           </div>
         </div>`).join('');
     } catch(e) { console.error(e); }
   }
 
-  function showToast(msg) {
+  function showToast(msg, type='success') {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.classList.add('show');
+    t.className = `toast ${type} show`;
     setTimeout(() => t.classList.remove('show'), 3000);
   }
-
-  loadMenu();
-  loadOrders();
-  setInterval(loadOrders, 10000);
 </script>
 </body>
 </html>
