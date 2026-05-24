@@ -81,6 +81,29 @@ def test_get_orders(client):
     data = json.loads(response.data)
     assert "total_orders" in data
 
+def test_get_customers(client):
+    """Test customers endpoint returns sorted list"""
+    order_data = {
+        "item_id": "1",
+        "quantity": 1,
+        "customer": "Thanmay"
+    }
+    client.post('/order',
+                data=json.dumps(order_data),
+                content_type='application/json')
+    response = client.get('/customers')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert "customers" in data
+    assert "total" in data
+    assert len(data["customers"]) > 0
+    customer = data["customers"][0]
+    assert "customer" in customer
+    assert "last_order" in customer
+    assert "last_order_time" in customer
+    assert "total_orders" in customer
+    assert "total_spent" in customer
+
 def test_customer_tracking(client):
     """Test customer order tracking metrics"""
     order_data = {
