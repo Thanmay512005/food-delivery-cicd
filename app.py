@@ -6,13 +6,17 @@ import random
 app = Flask(__name__)
 
 # --- Prometheus Metrics ---
-ORDER_COUNT = Counter('food_orders_total', 'Total number of food orders', ['item', 'status'])
-REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['endpoint'])
-TOTAL_REVENUE = Counter('food_revenue_total', 'Total revenue collected in rupees', ['item'])
-ORDER_VALUE = Gauge('food_last_order_value', 'Value of the last order placed')
+ORDER_COUNT = Counter('food_orders_total', 'Total food orders', ['item', 'status'])
+REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency', ['endpoint'])
+TOTAL_REVENUE = Counter('food_revenue_total', 'Total revenue', ['item'])
+ORDER_VALUE = Gauge('food_last_order_value', 'Last order value')
 AVERAGE_ORDER = Gauge('food_average_order_value', 'Average order value')
-TOTAL_ORDERS = Gauge('food_total_orders_count', 'Total orders placed so far')
-HIGHEST_ORDER = Gauge('food_highest_order_value', 'Highest single order value')
+TOTAL_ORDERS = Gauge('food_total_orders_count', 'Total orders count')
+HIGHEST_ORDER = Gauge('food_highest_order_value', 'Highest order value')
+UNIQUE_CUSTOMERS = Gauge('food_unique_customers_count', 'Unique customers today')
+CUSTOMER_ORDER_COUNT = Counter('food_customer_orders_total', 'Orders per customer', ['customer'])
+CATEGORY_COUNT = Counter('food_category_orders_total', 'Orders per category', ['category'])
+HIGHEST_CUSTOMER_ORDER = Gauge('food_highest_customer_order', 'Highest order by a customer', ['customer'])
 
 # --- Full Menu with 20 Items ---
 MENU = {
@@ -43,6 +47,9 @@ orders = []
 order_id_counter = 1
 total_revenue_sum = 0
 highest_order_value = 0
+unique_customers = set()
+customer_totals = {}
+customer_highest = {}
 
 @app.route('/')
 def home():
@@ -72,7 +79,7 @@ def place_order():
 
     item_id  = str(data.get('item_id'))
     quantity = int(data.get('quantity', 1))
-    customer = data.get('customer', 'Guest')
+    customer = data.get('customer', 'Guest').strip().title()
 
     if item_id not in MENU:
         ORDER_COUNT.labels(item='unknown', status='failed').inc()
@@ -96,12 +103,32 @@ def place_order():
     orders.append(order)
     order_id_counter += 1
 
+    # Update revenue and order stats
     total_revenue_sum += order_value
     if order_value > highest_order_value:
         highest_order_value = order_value
 
+    # Track unique customers
+    unique_customers.add(customer)
+    UNIQUE_CUSTOMERS.set(len(unique_customers))
+
+    # Track per customer totals
+    if customer not in customer_totals:
+        customer_totals[customer] = 0
+    customer_totals[customer] += order_value
+
+    # Track highest order per customer
+    if customer not in customer_highest:
+        customer_highest[customer] = 0
+    if order_value > customer_highest[customer]:
+        customer_highest[customer] = order_value
+        HIGHEST_CUSTOMER_ORDER.labels(customer=customer).set(order_value)
+
+    # Update all Prometheus metrics
     ORDER_COUNT.labels(item=item['name'], status=status).inc()
     TOTAL_REVENUE.labels(item=item['name']).inc(order_value)
+    CUSTOMER_ORDER_COUNT.labels(customer=customer).inc()
+    CATEGORY_COUNT.labels(category=item['category']).inc()
     ORDER_VALUE.set(order_value)
     TOTAL_ORDERS.set(len(orders))
     HIGHEST_ORDER.set(highest_order_value)
