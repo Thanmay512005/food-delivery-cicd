@@ -14,14 +14,28 @@ AVERAGE_ORDER = Gauge('food_average_order_value', 'Average order value')
 TOTAL_ORDERS = Gauge('food_total_orders_count', 'Total orders placed so far')
 HIGHEST_ORDER = Gauge('food_highest_order_value', 'Highest single order value')
 
-# --- Sample Menu ---
+# --- Full Menu with 20 Items ---
 MENU = {
-    "1": {"name": "Burger",  "price": 120, "prep_time": 15},
-    "2": {"name": "Pizza",   "price": 250, "prep_time": 25},
-    "3": {"name": "Pasta",   "price": 180, "prep_time": 20},
-    "4": {"name": "Salad",   "price": 90,  "prep_time": 10},
-    "5": {"name": "Biryani", "price": 200, "prep_time": 30},
-    "6": {"name": "Dosa",    "price": 80,  "prep_time": 12},
+    "1":  {"name": "Burger",          "price": 120, "prep_time": 15, "category": "Fast Food"},
+    "2":  {"name": "Pizza",           "price": 250, "prep_time": 25, "category": "Fast Food"},
+    "3":  {"name": "Pasta",           "price": 180, "prep_time": 20, "category": "Italian"},
+    "4":  {"name": "Salad",           "price": 90,  "prep_time": 10, "category": "Healthy"},
+    "5":  {"name": "Biryani",         "price": 200, "prep_time": 30, "category": "Indian"},
+    "6":  {"name": "Dosa",            "price": 80,  "prep_time": 12, "category": "Indian"},
+    "7":  {"name": "Paneer Tikka",    "price": 220, "prep_time": 20, "category": "Indian"},
+    "8":  {"name": "Fried Rice",      "price": 150, "prep_time": 15, "category": "Chinese"},
+    "9":  {"name": "Noodles",         "price": 130, "prep_time": 12, "category": "Chinese"},
+    "10": {"name": "Sandwich",        "price": 100, "prep_time": 10, "category": "Fast Food"},
+    "11": {"name": "Spring Rolls",    "price": 110, "prep_time": 15, "category": "Chinese"},
+    "12": {"name": "Masala Chai",     "price": 30,  "prep_time": 5,  "category": "Drinks"},
+    "13": {"name": "Butter Naan",     "price": 40,  "prep_time": 10, "category": "Indian"},
+    "14": {"name": "Dal Makhani",     "price": 160, "prep_time": 25, "category": "Indian"},
+    "15": {"name": "Chocolate Shake", "price": 120, "prep_time": 8,  "category": "Drinks"},
+    "16": {"name": "French Fries",    "price": 80,  "prep_time": 8,  "category": "Fast Food"},
+    "17": {"name": "Manchurian",      "price": 140, "prep_time": 15, "category": "Chinese"},
+    "18": {"name": "Idli Sambar",     "price": 70,  "prep_time": 10, "category": "Indian"},
+    "19": {"name": "Cold Coffee",     "price": 100, "prep_time": 5,  "category": "Drinks"},
+    "20": {"name": "Gulab Jamun",     "price": 60,  "prep_time": 5,  "category": "Dessert"},
 }
 
 # --- In-memory store ---
@@ -72,6 +86,7 @@ def place_order():
         "order_id":    order_id_counter,
         "customer":    customer,
         "item":        item['name'],
+        "category":    item['category'],
         "quantity":    quantity,
         "total_price": order_value,
         "status":      status,
@@ -81,7 +96,6 @@ def place_order():
     orders.append(order)
     order_id_counter += 1
 
-    # Update all metrics
     total_revenue_sum += order_value
     if order_value > highest_order_value:
         highest_order_value = order_value
